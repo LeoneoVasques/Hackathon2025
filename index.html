@@ -52,6 +52,8 @@
   position: absolute;
   top: 10px;
   right: 15px;
+  width: 30px;
+  height: 30px;
   background: none;
   border: none;
   font-size: 1.5rem;
@@ -60,7 +62,7 @@
   z-index: 5;
   width: auto;     
   height: auto;      
-  padding: 0;
+  padding: 5px;
   line-height: 1;
 }
 
@@ -140,7 +142,19 @@
     }
 
     .form-box button {
-      width: 100%;
+      width: 70px;
+      height: 30px;
+      padding: 0.6rem;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .form-box button {
+      width: 70px;
+      height: 30px;
       padding: 0.6rem;
       background: #007bff;
       color: white;
@@ -205,19 +219,19 @@
     }).addTo(map);
 
     const chamados = [
-      { rua: "Rua das Palmeiras", numero: 123, data: "22-05-2025", status: "aberto", descricao: "Buraco na via", setor: "SAR02", concluido: false, coords: [-23.465, -46.538], imagem: 'https://www.crefito8.gov.br/portal/images/phocagallery/galeria2/thumbs/phoca_thumb_l_image04_grd.png'},
-      { rua: "Rua das Palmeiras", numero: 125, data: "20-05-2025", status: "concluido", descricao: "Poste sem iluminação", setor: "SAR04", concluido: true, coords: [-23.4655, -46.5382] },
-      { rua: "Av. Guarulhos", numero: 1000, data: "21-05-2025", status: "vistoriado", descricao: "Enxurrada constante", setor: "SAR02", concluido: false, coords: [-23.46, -46.535] },
-      { rua: "Rua Bela Vista", numero: 45, data: "18-05-2025", status: "aberto", descricao: "Alagamento", setor: "SAR02", concluido: false, coords: [-23.466, -46.537] },
-      { rua: "Rua Bela Vista", numero: 48, data: "12-05-2025", status: "concluido", descricao: "Troca de poste", setor: "SAR04", concluido: true, coords: [-23.4662, -46.5371] },
-      { rua: "Av. Otávio Braga", numero: 200, data: "19-05-2025", status: "vistoriado", descricao: "Cratera no meio da rua", setor: "SAR02", concluido: false, coords: [-23.467, -46.539] },
-      { rua: "Rua dos Pássaros", numero: 32, data: "10-05-2025", status: "vistoriado", descricao: "Luminária quebrada", setor: "SAR04", concluido: false, coords: [-23.468, -46.536] },
-      { rua: "Rua dos Pássaros", numero: 34, data: "05-05-2025", status: "concluido", descricao: "Manutenção fiação", setor: "SAR04", concluido: true, coords: [-23.4681, -46.5362] },
-      { rua: "Rua da União", numero: 75, data: "15-05-2025", status: "aberto", descricao: "Poça d'água constante", setor: "SAR02", concluido: false, coords: [-23.469, -46.534] },
-      { rua: "Rua da União", numero: 78, data: "13-05-2025", status: "concluido", descricao: "Lâmpada queimada", setor: "SAR04", concluido: true, coords: [-23.4692, -46.5341] },
-      { rua: "Av. Monteiro Lobato", numero: 400, data: "17-05-2025", status: "vistoriado", descricao: "Bueiro entupido", setor: "SAR02", concluido: false, coords: [-23.4657, -46.5401] },
-      { rua: "Av. Monteiro Lobato", numero: 402, data: "07-05-2025", status: "concluido", descricao: "Poste danificado", setor: "SAR04", concluido: true, coords: [-23.4659, -46.5403] },
-      { rua: "Av. Monteiro Lobato", numero: 405, data: "01-05-2025", status: "concluido", descricao: "Iluminação quebrada", setor: "SAR04", concluido: true, coords: [-23.4663, -46.5405] }
+      { rua: "Rua das Palmeiras", numero: 123, data: "22-05-2025", status: "aberto", descricao: "Buraco na via", setor: "SAR02", concluido: false, coords: [-23.465, -46.538], imagem: 'https://cdn6.campograndenews.com.br/uploads/noticias/2020/03/10/3jakh3cot9q8s.jpg'},
+      { rua: "Rua das Palmeiras", numero: 125, data: "20-05-2025", status: "concluido", descricao: "Poste sem iluminação", setor: "SAR04", concluido: true, coords: [-23.4655, -46.5382], imagem:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRLdSwujEcXfAk5rdPk4RAP9as0FU6MJv-9Gg&s' },
+      { rua: "Av. Guarulhos", numero: 1000, data: "21-05-2025", status: "vistoriado", descricao: "Enxurrada constante", setor: "SAR02", concluido: false, coords: [-23.46, -46.535], imagem:'https://blog.ofitexto.com.br/wp-content/uploads/2023/03/2017_09_12-Enchentes-alagamentos-inundacoes-e-enxurradas-voce-sabe-a-diferenca-GEOGRAFIA-4.jpg' },
+      { rua: "Rua Bela Vista", numero: 45, data: "18-05-2025", status: "aberto", descricao: "Alagamento", setor: "SAR02", concluido: false, coords: [-23.466, -46.537], imagem:'https://sbtnews.sbt.com.br/_next/image?url=https%3A%2F%2Fsbt-news-assets-prod.s3.sa-east-1.amazonaws.com%2FMarginal_Tiete_na_altura_da_ponte_das_Bandeiras_c366f92226.jpg&w=400&q=90' },
+      { rua: "Rua Bela Vista", numero: 48, data: "12-05-2025", status: "concluido", descricao: "Troca de poste", setor: "SAR04", concluido: true, coords: [-23.4662, -46.5371], imagem:'https://leisecamarica.com.br/images/noticias/43285/15042022133813_Screenshot.png' },
+      { rua: "Av. Otávio Braga", numero: 200, data: "19-05-2025", status: "vistoriado", descricao: "Cratera no meio da rua", setor: "SAR02", concluido: false, coords: [-23.467, -46.539], imagem: 'https://s2-g1.glbimg.com/gBd1OIAwOZ6kA8Ptj62ZQe-ioho=/0x0:1280x720/984x0/smart/filters:strip_icc()/i.s3.glbimg.com/v1/AUTH_59edd422c0c84a879bd37670ae4f538a/internal_photos/bs/2019/I/L/Bzt7dQT4C0ii8tJxWubg/whatsapp-image-2019-05-16-at-07.53.42.jpeg' },
+      { rua: "Rua dos Pássaros", numero: 32, data: "10-05-2025", status: "vistoriado", descricao: "Luminária quebrada", setor: "SAR04", concluido: false, coords: [-23.468, -46.536], imagem: 'https://thumbs.dreamstime.com/b/luz-de-rua-quebrada-50463352.jpg' },
+      { rua: "Rua dos Pássaros", numero: 34, data: "05-05-2025", status: "concluido", descricao: "Fiação exposta", setor: "SAR04", concluido: true, coords: [-23.4681, -46.5362], imagem: 'https://www.folhadebrumadinho.com.br/wp-content/uploads/2023/01/Screenshot_20230112-222348_Gallery-1024x1029.jpg' },
+      { rua: "Rua da União", numero: 75, data: "15-05-2025", status: "aberto", descricao: "Poça d'água constante", setor: "SAR02", concluido: false, coords: [-23.469, -46.534], imagem: 'https://cdn6.campograndenews.com.br/uploads/noticias/2020/03/10/8gki7c5s9hnn.jpg' },
+      { rua: "Rua da União", numero: 78, data: "13-05-2025", status: "concluido", descricao: "Lâmpada queimada", setor: "SAR04", concluido: true, coords: [-23.4692, -46.5341], imagem:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRLdSwujEcXfAk5rdPk4RAP9as0FU6MJv-9Gg&s' },
+      { rua: "Av. Monteiro Lobato", numero: 400, data: "17-05-2025", status: "vistoriado", descricao: "Bueiro entupido", setor: "SAR02", concluido: false, coords: [-23.4657, -46.5401], imagem: 'https://socorrodesentupidora.com.br/wp-content/uploads/2023/01/bueiro-entupido-araguaina.jpeg' },
+      { rua: "Av. Monteiro Lobato", numero: 402, data: "07-05-2025", status: "concluido", descricao: "Poste danificado", setor: "SAR04", concluido: true, coords: [-23.4659, -46.5403], imagem:'https://leisecamarica.com.br/images/noticias/43285/15042022133813_Screenshot.png'  },
+      { rua: "Av. Monteiro Lobato", numero: 405, data: "01-05-2025", status: "concluido", descricao: "Iluminação quebrada", setor: "SAR04", concluido: true, coords: [-23.4663, -46.5405], imagem: 'https://thumbs.dreamstime.com/b/luz-de-rua-quebrada-50463352.jpg'  }
     ];
 
     chamados.forEach(chamado => {
