@@ -270,6 +270,8 @@
     function showChamadosRua(rua) {
       const sidebar = document.getElementById('sidebar');
       const list = document.getElementById('report-list');
+      const title = sidebar.querySelector('h3');
+title.textContent = `Chamados na ${rua}`;
       sidebar.classList.add('active');
       list.innerHTML = '';
 
