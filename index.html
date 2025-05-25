@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GruReporta</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; font-family: Arial, sans-serif; }
+    #map { height: 100%; }
+
+    .sidebar {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 100%;
+      max-height: 50%;
+      background: white;
+      border-top: 1px solid #ccc;
+      padding: 1rem;
+      overflow-y: auto;
+      display: none;
+    }
+
+    .sidebar.active { display: block; }
+
+    .status {
+      padding: 0.2rem 0.5rem;
+      border-radius: 5px;
+      color: white;
+      font-size: 0.8rem;
+      margin-left: 0.5rem;
+    }
+    .aberto { background: red; }
+    .vistoriado, .vistoriado-em-andamento { background: orange; }
+    .processo { background: blue; }
+    .concluido { background: green; }
+
+    .add-btn {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #007bff;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 20px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+
+    @media (min-width: 600px) {
+      .sidebar { width: 300px; max-height: 100%; border-left: 1px solid #ccc; border-top: none; }
+    }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+  <div class="sidebar" id="sidebar">
+    <h3>Chamados na Rua</h3>
+    <ul id="report-list"></ul>
+  </div>
+  <button class="add-btn">+ Novo Chamado (Ilustrativo)</button>
+
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script>
+    const map = L.map('map', {
+      center: [-23.4648, -46.5384],
+      zoom: 14,
+      maxBounds: [
+        [-23.6, -46.7],
+        [-23.3, -46.4]
+      ],
+      maxBoundsViscosity: 1.0
+    });
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+
+    const chamados = [
+      { rua: "Rua das Palmeiras", numero: 123, data: "2025-05-22", status: "aberto", descricao: "Buraco na via", setor: "SAR02", concluido: false, coords: [-23.465, -46.538] },
+      { rua: "Rua das Palmeiras", numero: 125, data: "2025-05-20", status: "concluido", descricao: "Poste sem iluminação", setor: "SAR04", concluido: true, coords: [-23.4655, -46.5382] },
+      { rua: "Av. Guarulhos", numero: 1000, data: "2025-05-21", status: "Vistoriado/Em andamneto", descricao: "Enxurrada constante", setor: "SAR02", concluido: false, coords: [-23.46, -46.535] },
+      { rua: "Rua João Gonçalves", numero: 55, data: "2025-05-23", status: "aberto", descricao: "Árvore caída", setor: "SAR02", concluido: false, coords: [-23.467, -46.537] },
+      { rua: "Rua João Gonçalves", numero: 57, data: "2025-05-20", status: "concluido", descricao: "Troca de lâmpada", setor: "SAR04", concluido: true, coords: [-23.4671, -46.5372] },
+      { rua: "Rua João Gonçalves", numero: 59, data: "2025-05-22", status: "Vistoriado/Em andamneto", descricao: "Valeta entupida", setor: "SAR02", concluido: false, coords: [-23.4672, -46.5373] },
+      { rua: "Av. Salgado Filho", numero: 150, data: "2025-05-18", status: "aberto", descricao: "Asfalto danificado", setor: "SAR02", concluido: false, coords: [-23.464, -46.534] },
+      { rua: "Av. Salgado Filho", numero: 152, data: "2025-05-19", status: "concluido", descricao: "Poste piscando", setor: "SAR04", concluido: true, coords: [-23.4641, -46.5341] },
+      { rua: "Rua Tapajós", numero: 10, data: "2025-05-21", status: "Vistoriado/Em andamneto", descricao: "Alagamento frequente", setor: "SAR02", concluido: false, coords: [-23.463, -46.539] },
+      { rua: "Rua Tapajós", numero: 12, data: "2025-05-21", status: "aberto", descricao: "Bueiro sem tampa", setor: "SAR02", concluido: false, coords: [-23.4631, -46.5391] }
+      // Adicione mais chamados conforme necessário...
+    ];
+
+    chamados.forEach(chamado => {
+      if (!chamado.concluido) {
+        const marker = L.circleMarker(chamado.coords, {
+          radius: 10,
+          color: getColor(chamado.status),
+          fillOpacity: 0.7
+        }).addTo(map);
+
+        marker.on('click', () => showChamadosRua(chamado.rua));
+      }
+    });
+
+    function getColor(status) {
+      return {
+        "aberto": 'red',
+        "Vistoriado/Em andamneto": 'orange',
+        "processo": 'blue',
+        "concluido": 'green'
+      }[status] || 'gray';
+    }
+
+    function showChamadosRua(rua) {
+      const sidebar = document.getElementById('sidebar');
+      const list = document.getElementById('report-list');
+      sidebar.classList.add('active');
+
+      list.innerHTML = '';
+      const chamadosRua = chamados.filter(c => c.rua === rua);
+
+      chamadosRua.forEach(c => {
+        const li = document.createElement('li');
+        li.innerHTML = `
+          <strong>${c.setor}</strong> - ${c.descricao}<br>
+          <small>${c.data} - Nº ${c.numero}</small>
+          <span class="status ${c.status.toLowerCase().replace(/\W+/g, '-')}">${c.status}</span>
+        `;
+        list.appendChild(li);
+      });
+    }
+  </script>
+</body>
+</html>
