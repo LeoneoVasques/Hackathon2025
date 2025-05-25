@@ -5,10 +5,34 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>GruReporta</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     html, body { height: 100%; font-family: Arial, sans-serif; }
-    #map { height: 100%; }
+    #map { height: 100%; z-index: 1; }
+
+    .overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: #007bff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      animation: fadeOut 3s forwards;
+    }
+
+    .overlay h1 {
+      color: white;
+      font-size: 2.5rem;
+      font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    }
+
+    @keyframes fadeOut {
+      0% { opacity: 1; }
+      100% { opacity: 0; visibility: hidden; }
+    }
 
     .sidebar {
       position: absolute;
@@ -21,6 +45,8 @@
       padding: 1rem;
       overflow-y: auto;
       display: none;
+      z-index: 10;
+      border-radius: 20px;
     }
 
     .sidebar.active { display: block; }
@@ -49,30 +75,93 @@
       border-radius: 20px;
       font-size: 1rem;
       cursor: pointer;
+      z-index: 3;
     }
 
+    .form-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.7);
+      z-index: 4;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .form-box {
+      background: white;
+      padding: 1.5rem;
+      width: 90%;
+      max-width: 400px;
+      border-radius: 10px;
+    }
+
+    .form-box h3 {
+      margin-bottom: 1rem;
+    }
+
+    .form-box input,
+    .form-box textarea {
+      width: 100%;
+      margin-bottom: 0.8rem;
+      padding: 0.5rem;
+    }
+
+    .form-box button {
+      width: 100%;
+      padding: 0.6rem;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    ul {
+      padding: 15px;
+    }
+    
+
     @media (min-width: 600px) {
-      .sidebar { width: 300px; max-height: 100%; border-left: 1px solid #ccc; border-top: none; }
+      .sidebar {
+        width: 300px;
+        max-height: 100%;
+        border-left: 1px solid #ccc;
+        border-top: none;
+      }
     }
   </style>
 </head>
 <body>
+  <div class="overlay">
+    <h1>GruReporta</h1>
+  </div>
+
   <div id="map"></div>
   <div class="sidebar" id="sidebar">
     <h3>Chamados na Rua</h3>
     <ul id="report-list"></ul>
   </div>
-  <button class="add-btn">+ Novo Chamado (Ilustrativo)</button>
+  <button class="add-btn" onclick="openForm()">+ Novo Chamado</button>
+  <div class="form-overlay" id="formOverlay">
+    <div class="form-box">
+      <h3>Novo Chamado</h3>
+      <input type="text" placeholder="Nome da Rua (obrigatório)">
+      <input type="number" placeholder="Número (obrigatório)">
+      <input type="date" placeholder="Data do chamado (obrigatório)">
+      <input type="email" placeholder="Email (obrigatório)">
+      <textarea placeholder="Descrição da demanda (obrigatório)"></textarea>
+      <input type="text" placeholder="Número de telefone (opcional)">
+      <input type="file" accept="image/*,video/*">
+      <button onclick="closeForm()">Enviar</button>
+    </div>
+  </div>
 
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <script>
     const map = L.map('map', {
       center: [-23.4648, -46.5384],
       zoom: 14,
-      maxBounds: [
-        [-23.6, -46.7],
-        [-23.3, -46.4]
-      ],
+      maxBounds: [[-23.6, -46.7], [-23.3, -46.4]],
       maxBoundsViscosity: 1.0
     });
 
@@ -81,21 +170,31 @@
     }).addTo(map);
 
     const chamados = [
-      { rua: "Rua das Palmeiras", numero: 123, data: "2025-05-22", status: "aberto", descricao: "Buraco na via", setor: "SAR02", concluido: false, coords: [-23.465, -46.538] },
-      { rua: "Rua das Palmeiras", numero: 125, data: "2025-05-20", status: "concluido", descricao: "Poste sem iluminação", setor: "SAR04", concluido: true, coords: [-23.4655, -46.5382] },
-      { rua: "Av. Guarulhos", numero: 1000, data: "2025-05-21", status: "Vistoriado/Em andamneto", descricao: "Enxurrada constante", setor: "SAR02", concluido: false, coords: [-23.46, -46.535] },
-      { rua: "Rua João Gonçalves", numero: 55, data: "2025-05-23", status: "aberto", descricao: "Árvore caída", setor: "SAR02", concluido: false, coords: [-23.467, -46.537] },
-      { rua: "Rua João Gonçalves", numero: 57, data: "2025-05-20", status: "concluido", descricao: "Troca de lâmpada", setor: "SAR04", concluido: true, coords: [-23.4671, -46.5372] },
-      { rua: "Rua João Gonçalves", numero: 59, data: "2025-05-22", status: "Vistoriado/Em andamneto", descricao: "Valeta entupida", setor: "SAR02", concluido: false, coords: [-23.4672, -46.5373] },
-      { rua: "Av. Salgado Filho", numero: 150, data: "2025-05-18", status: "aberto", descricao: "Asfalto danificado", setor: "SAR02", concluido: false, coords: [-23.464, -46.534] },
-      { rua: "Av. Salgado Filho", numero: 152, data: "2025-05-19", status: "concluido", descricao: "Poste piscando", setor: "SAR04", concluido: true, coords: [-23.4641, -46.5341] },
-      { rua: "Rua Tapajós", numero: 10, data: "2025-05-21", status: "Vistoriado/Em andamneto", descricao: "Alagamento frequente", setor: "SAR02", concluido: false, coords: [-23.463, -46.539] },
-      { rua: "Rua Tapajós", numero: 12, data: "2025-05-21", status: "aberto", descricao: "Bueiro sem tampa", setor: "SAR02", concluido: false, coords: [-23.4631, -46.5391] }
-      // Adicione mais chamados conforme necessário...
-    ];
+    { rua: "Rua das Palmeiras", numero: 123, data: "22-05-2025", status: "aberto", descricao: "Buraco na via", setor: "SAR02", concluido: false, coords: [-23.465, -46.538] },
+      { rua: "Rua das Palmeiras", numero: 125, data: "20-05-2025", status: "concluido", descricao: "Poste sem iluminação", setor: "SAR04", concluido: true, coords: [-23.4655, -46.5382] },
+      { rua: "Av. Guarulhos", numero: 1000, data: "21-05-2025", status: "vistoriado", descricao: "Enxurrada constante", setor: "SAR02", concluido: false, coords: [-23.46, -46.535] },
+      { rua: "Rua Bela Vista", numero: 45, data: "18-05-2025", status: "aberto", descricao: "Alagamento", setor: "SAR02", concluido: false, coords: [-23.466, -46.537] },
+      { rua: "Rua Bela Vista", numero: 48, data: "12-05-2025", status: "concluido", descricao: "Troca de poste", setor: "SAR04", concluido: true, coords: [-23.4662, -46.5371] },
+      { rua: "Av. Otávio Braga", numero: 200, data: "19-05-2025", status: "vistoriado", descricao: "Cratera no meio da rua", setor: "SAR02", concluido: false, coords: [-23.467, -46.539] },
+      { rua: "Rua dos Pássaros", numero: 32, data: "10-05-2025", status: "vistoriado", descricao: "Luminária quebrada", setor: "SAR04", concluido: false, coords: [-23.468, -46.536] },
+      { rua: "Rua dos Pássaros", numero: 34, data: "05-05-2025", status: "concluido", descricao: "Manutenção fiação", setor: "SAR04", concluido: true, coords: [-23.4681, -46.5362] },
+      { rua: "Rua da União", numero: 75, data: "15-05-2025", status: "aberto", descricao: "Poça d'água constante", setor: "SAR02", concluido: false, coords: [-23.469, -46.534] },
+      { rua: "Rua da União", numero: 78, data: "13-05-2025", status: "concluido", descricao: "Lâmpada queimada", setor: "SAR04", concluido: true, coords: [-23.4692, -46.5341] },
+      { rua: "Av. Monteiro Lobato", numero: 400, data: "17-05-2025", status: "vistoriado", descricao: "Bueiro entupido", setor: "SAR02", concluido: false, coords: [-23.4657, -46.5401] },
+      { rua: "Av. Monteiro Lobato", numero: 402, data: "07-05-2025", status: "concluido", descricao: "Poste danificado", setor: "SAR04", concluido: true, coords: [-23.4659, -46.5403] }
+  ];
 
     chamados.forEach(chamado => {
       if (!chamado.concluido) {
+        const marker = L.circleMarker(chamado.coords, {
+          radius: 10,
+          color: getColor(chamado.status),
+          fillOpacity: 0.7
+        }).addTo(map);
+
+        marker.on('click', () => showChamadosRua(chamado.rua));
+      }
+      if (chamado.vistoriado) {
         const marker = L.circleMarker(chamado.coords, {
           radius: 10,
           color: getColor(chamado.status),
@@ -109,7 +208,7 @@
     function getColor(status) {
       return {
         "aberto": 'red',
-        "Vistoriado/Em andamneto": 'orange',
+        "vistoriado": 'orange',
         "processo": 'blue',
         "concluido": 'green'
       }[status] || 'gray';
@@ -119,8 +218,8 @@
       const sidebar = document.getElementById('sidebar');
       const list = document.getElementById('report-list');
       sidebar.classList.add('active');
-
       list.innerHTML = '';
+
       const chamadosRua = chamados.filter(c => c.rua === rua);
 
       chamadosRua.forEach(c => {
@@ -132,6 +231,13 @@
         `;
         list.appendChild(li);
       });
+    }
+    function openForm() {
+      document.getElementById('formOverlay').style.display = 'flex';
+    }
+
+    function closeForm() {
+      document.getElementById('formOverlay').style.display = 'none';
     }
   </script>
 </body>
