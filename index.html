@@ -141,27 +141,30 @@
       padding: 0.5rem;
     }
 
-    .form-box button {
-      width: 70px;
+    .firula {
+      
+      width: 30px;
       height: 30px;
       padding: 0.6rem;
-      background: #007bff;
+      background: #ff0000;
       color: white;
       border: none;
       border-radius: 5px;
       cursor: pointer;
     }
 
-    .form-box button {
+    .enviar {
+      
       width: 70px;
       height: 30px;
       padding: 0.6rem;
-      background: #007bff;
+      background: #1044d4;
       color: white;
       border: none;
       border-radius: 5px;
       cursor: pointer;
     }
+
     ul {
       padding: 15px;
     }
@@ -193,7 +196,7 @@
   <button class="add-btn" onclick="openForm(), closeSidebar()">+ Novo Chamado</button>
   <div class="form-overlay" id="formOverlay">
     <div class="form-box">
-      <button class="close-form" onclick="closeForm()">×</button>
+      <button class="firula" onclick="closeForm()">×</button>
       <h3>Novo Chamado</h3>
       <input type="text" placeholder="Nome da Rua (obrigatório)" required>
       <input type="number" placeholder="Número (obrigatório)" required>
@@ -201,7 +204,7 @@
       <input type="email" placeholder="Email (obrigatório)" required>
       <textarea placeholder="Descrição da demanda (obrigatório)" required></textarea>
       <input type="file" accept="image/*,video/*">
-      <button onclick="closeForm(), alerta()">Enviar</button>
+      <button class='enviar' onclick="closeForm(), alerta()">Enviar</button>
     </div>
   </div>
 
