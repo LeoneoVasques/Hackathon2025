@@ -58,8 +58,8 @@
   cursor: pointer;
   color: #333;
   z-index: 5;
-  width: auto;        /* <-- Corrige o esticamento */
-  height: auto;       /* <-- Garante tamanho natural */
+  width: auto;     
+  height: auto;      
   padding: 0;
   line-height: 1;
 }
@@ -165,6 +165,7 @@
 </head>
 <body>
   <div class="overlay">
+    
     <h1>GruReporta</h1>
   </div>
 
@@ -175,19 +176,18 @@
     <ul id="report-list"></ul>
   </div>
   
-  <button class="add-btn" onclick="openForm()">+ Novo Chamado</button>
+  <button class="add-btn" onclick="openForm(), closeSidebar()">+ Novo Chamado</button>
   <div class="form-overlay" id="formOverlay">
     <div class="form-box">
       <button class="close-form" onclick="closeForm()">×</button>
       <h3>Novo Chamado</h3>
-      <input type="text" placeholder="Nome da Rua (obrigatório)">
-      <input type="number" placeholder="Número (obrigatório)">
-      <input type="date" placeholder="Data do chamado (obrigatório)">
-      <input type="email" placeholder="Email (obrigatório)">
-      <textarea placeholder="Descrição da demanda (obrigatório)"></textarea>
-      <input type="text" placeholder="Número de telefone (opcional)">
+      <input type="text" placeholder="Nome da Rua (obrigatório)" required>
+      <input type="number" placeholder="Número (obrigatório)" required>
+      <input type="date" placeholder="Data do chamado (obrigatório)" required>
+      <input type="email" placeholder="Email (obrigatório)" required>
+      <textarea placeholder="Descrição da demanda (obrigatório)" required></textarea>
       <input type="file" accept="image/*,video/*">
-      <button onclick="closeForm()">Enviar</button>
+      <button onclick="closeForm(), alerta()">Enviar</button>
     </div>
   </div>
 
@@ -205,7 +205,7 @@
     }).addTo(map);
 
     const chamados = [
-    { rua: "Rua das Palmeiras", numero: 123, data: "22-05-2025", status: "aberto", descricao: "Buraco na via", setor: "SAR02", concluido: false, coords: [-23.465, -46.538] },
+      { rua: "Rua das Palmeiras", numero: 123, data: "22-05-2025", status: "aberto", descricao: "Buraco na via", setor: "SAR02", concluido: false, coords: [-23.465, -46.538], imagem: 'https://www.crefito8.gov.br/portal/images/phocagallery/galeria2/thumbs/phoca_thumb_l_image04_grd.png'},
       { rua: "Rua das Palmeiras", numero: 125, data: "20-05-2025", status: "concluido", descricao: "Poste sem iluminação", setor: "SAR04", concluido: true, coords: [-23.4655, -46.5382] },
       { rua: "Av. Guarulhos", numero: 1000, data: "21-05-2025", status: "vistoriado", descricao: "Enxurrada constante", setor: "SAR02", concluido: false, coords: [-23.46, -46.535] },
       { rua: "Rua Bela Vista", numero: 45, data: "18-05-2025", status: "aberto", descricao: "Alagamento", setor: "SAR02", concluido: false, coords: [-23.466, -46.537] },
@@ -261,6 +261,7 @@
       chamadosRua.forEach(c => {
         const li = document.createElement('li');
         li.innerHTML = `
+          <img src="${c.imagem}" alt="Imagem do chamado" style="width: 100px; height: 100px; object-fit: cover; margin-right: 10px; vertical-align: middle;">
           <strong>${c.setor}</strong> - ${c.descricao}<br>
           <small>${c.data} - Nº ${c.numero}</small>
           <span class="status ${c.status.toLowerCase().replace(/\W+/g, '-')}">${c.status}</span>
@@ -270,6 +271,9 @@
     }
     function openForm() {
       document.getElementById('formOverlay').style.display = 'flex';
+    }
+    function alerta(){
+      return alert("Demanda registrada!")
     }
 
     function closeForm() {
